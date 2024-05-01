@@ -116,14 +116,14 @@ const purchase = asyncHandler(async (req, res) => {
     if (findCart.length > 0) {
       if (findInMessageUser) {
         findCart.forEach((item) => {
-          findInMessageUser.total_price += item.price
+          findInMessageUser.total_price += item.price;
           findInMessageUser.message.push({
             product_name: item.title,
             product_image: item.image,
             product_price: item.price,
             date: dateBase,
             time: timeBase,
-            code: generateCode()
+            code: generateCode(),
           });
         });
 
@@ -160,7 +160,7 @@ const purchase = asyncHandler(async (req, res) => {
         let date = new Date();
         let getMonth = date.getMonth();
         let fullDate = `${date.getDate()}-${month[getMonth]}`;
-        let fullTime = `${date.getHours()}:${date.getMinutes()}`
+        let fullTime = `${date.getHours()}:${date.getMinutes()}`;
 
         const createMessage = new Message({
           chatId: findUser.chatId,
@@ -169,7 +169,7 @@ const purchase = asyncHandler(async (req, res) => {
           total_price: findUser.total_price,
           date: fullDate,
           time: fullTime,
-          code: generateCode()
+          code: generateCode(),
         });
 
         findCart.forEach((item) => {
@@ -179,7 +179,7 @@ const purchase = asyncHandler(async (req, res) => {
             product_price: item.price,
             date: dateBase,
             time: timeBase,
-            code: generateCode()
+            code: generateCode(),
           });
         });
 
@@ -206,7 +206,17 @@ const purchase = asyncHandler(async (req, res) => {
   }
 });
 
+const getCategorys = asyncHandler(async (req, res) => {
+  const findProd = await Product.find({});
+  let category = findProd.reduce((acc, cur) => {
+    acc[acc.category] = true;
+    return cur;
+  }, {});
 
+  let uniqueCategoriesArray = Object.keys(category);
+  console.log(category)
+  // res.status(200).json({ message: 'Success!', data: uniqueCategoriesArray })
+});
 
 module.exports = {
   regis,
@@ -215,4 +225,5 @@ module.exports = {
   deleteFromCart,
   getMyCart,
   purchase,
+  getCategorys,
 };

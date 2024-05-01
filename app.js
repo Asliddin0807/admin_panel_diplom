@@ -1,13 +1,38 @@
-let date = new Date();
-let dateBase = `${
-  date.getDate() < 10 ? "0" + date.getDate() : date.getDate()
-}.${
-  date.getMonth() < 10 ? "0" + date.getMonth() : date.getMonth()
-}.${date.getFullYear()}`;
+let app = [
+  {
+    name: 'Asl',
+    category: 'Mobile'
+  },
+  {
+    name: 'asas',
+    category: 'Mobile'
+  },
+  {
+    name: 'asdasdasdasdasdas',
+    category: 'Mobile'
+  },
+  {
+    name: 'asdasdasasdasd',
+    category: 'Accsesuar'
+  },
+  {
+    name: 'Asasdasdasdasdasdasdasl',
+    category: 'Accsesuar'
+  },
+  {
+    name: 'asdasdasdasdasdasdasd',
+    category: 'Laptop'
+  },
+  {
+    name: 'ajsdksajda',
+    category: 'Laptop'
+  }
+];
 
-console.log(dateBase);
-let timeBase = `${date.getHours() < 10 ? "0" + date.getHours() : date.getHours()}:${
-  date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()
-}`;
+function removeDuplicateCategories(array) {
+  let uniqueCategories = new Set(array.map(item => item.category));
+  return Array.from(uniqueCategories);
+}
 
-module.exports = { dateBase, timeBase }
+let uniqueCategories = removeDuplicateCategories(app);
+console.log(uniqueCategories);

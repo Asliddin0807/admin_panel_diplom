@@ -9,12 +9,16 @@ const {
   getProductById
 } = require("../controllers/product_controller");
 const { adminMiddleWare } = require("../middleware/admin_middleware");
+const multer = require('multer')
 
-router.post("/add", adminMiddleWare, addProduct);
+const upload = multer({ dest: 'uploads/' });
+
+router.post("/add", upload.single('image'), adminMiddleWare, addProduct);
 router.get("/get_product", getProducts);
 router.delete("/deleteProduct", adminMiddleWare, deleteProduct);
 router.put("/update/:prod_id", adminMiddleWare, updateProd);
 router.post('/category', getProductByCateg)
 router.post('/product_by_id', getProductById)
+
 
 module.exports = router;

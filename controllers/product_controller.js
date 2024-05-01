@@ -1,22 +1,35 @@
 const Product = require("../models/tovar");
 const asyncHandler = require("express-async-handler");
 const Admin = require("../models/admins");
+const cloudinary = require("cloudinary").v2;
+require("dotenv").config();
+const multer = require("multer");
 
-//for admin panel
 const addProduct = asyncHandler(async (req, res) => {
-  const { title, price, image, desc, category, numbers } = req.body;
+  const { title, price, desc, category, numbers } = req.body;
+  if (!req.file) {
+    return res.status(400).json({ message: "Изображение не найдено" });
+  }
+
+  cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET,
+  });
+
+  const result = await cloudinary.uploader.upload(req.file.path);
 
   const createProduct = new Product({
     title: title,
     price: price,
-    image: image,
+    image: result.secure_url,
     desc: desc,
     category: category,
     numbers: numbers,
   });
 
-  await createProduct.save()
-  res.status(200).json({ message: "Success!" })
+  await createProduct.save();
+  res.status(200).json({ message: "Success!" });
 });
 
 //for users
@@ -28,17 +41,17 @@ const getProducts = asyncHandler(async (req, res) => {
 //for admin panel
 const deleteProduct = asyncHandler(async (req, res) => {
   const { prod_id } = req.body;
-  const { id } = req.admin
-  const findAdmin = await Admin.findById({ _id: id })
-  if(!findAdmin){
-      res.status(404).json({ message: 'Failure' })
-  }else{
+  const { id } = req.admin;
+  const findAdmin = await Admin.findById({ _id: id });
+  if (!findAdmin) {
+    res.status(404).json({ message: "Failure" });
+  } else {
     const findProduct = await Product.findById({ _id: prod_id });
     if (findProduct) {
       const deleteItem = await Product.findByIdAndDelete({ _id: prod_id });
       await deleteItem.save();
       res.status(200).json({ message: "Товар удален!" });
-    }else{
+    } else {
       res.status(404).json({ message: "Продукт не найден!" });
     }
   }
@@ -53,7 +66,6 @@ const updateProd = asyncHandler(async (req, res) => {
   if (!findAdmin) {
     res.status(404).json({ message: "Admin is not defined!" });
   }
-  
 
   const findProd = await Product.findByIdAndUpdate(
     {
@@ -66,36 +78,37 @@ const updateProd = asyncHandler(async (req, res) => {
       viewers: viewers,
       numbers: numbers,
       desc: desc,
-      category: category
+      category: category,
     },
     {
-        new: true
+      new: true,
     }
   );
 
-  res.status(200).json({ message: 'Success!' })
+  res.status(200).json({ message: "Success!" });
 });
 
-const getProductByCateg = asyncHandler(async(req, res) => {
-  const { category } = req.body
-  const findProd = await Product.findOne({ category: category })
-  if(findProd){
-    res.status(200).json({ message: 'Success!', data: findProd })
-  }else{
-    res.status(404).json({ message: 'Failed!' })
+const getProductByCateg = asyncHandler(async (req, res) => {
+  const { category } = req.body;
+  const findProd = await Product.find({});
+  
+  if (findProd) {
+    let base = findProd.filter(item => item.category == category)
+    res.status(200).json({ message: "Success!", data: base });
+  } else {
+    res.status(404).json({ message: "Failed!" });
   }
-})
+});
 
-const getProductById = asyncHandler(async(req, res) => {
-  const { id } = req.body
-  console.log(id)
-  const findProd = await Product.findById({ _id: id })
-  console.log(findProd)
-  if(findProd){
-    res.status(200).json({ message: "Success!", data: findProd })
-  }else
-  res.status(404).json({ message: 'Product is not defined!' })
-})
+const getProductById = asyncHandler(async (req, res) => {
+  const { id } = req.body;
+  console.log(id);
+  const findProd = await Product.findById({ _id: id });
+  console.log(findProd);
+  if (findProd) {
+    res.status(200).json({ message: "Success!", data: findProd });
+  } else res.status(404).json({ message: "Product is not defined!" });
+});
 
 module.exports = {
   addProduct,
@@ -103,5 +116,5 @@ module.exports = {
   deleteProduct,
   updateProd,
   getProductByCateg,
-  getProductById
+  getProductById,
 };

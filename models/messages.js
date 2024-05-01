@@ -23,7 +23,6 @@ isRead: {
     type: Boolean,
     default: false,
   },
-
 });
 
 module.exports = mongoose.model("Message", messageSchema);

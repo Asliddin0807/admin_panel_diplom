@@ -3,7 +3,6 @@ const clientSchema = new mongoose.Schema({
     chatId: String,
     name: String,
     phone_number: String,
-
     cart: [
         {
             id: String,

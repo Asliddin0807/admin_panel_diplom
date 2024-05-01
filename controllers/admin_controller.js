@@ -2,8 +2,7 @@ const Admin = require("../models/admins");
 const asyncHandler = require("express-async-handler");
 const { createToken, refreshToken } = require("../config/token");
 const Message = require("../models/messages");
-const Client = require('../models/client');
-
+const Client = require("../models/client");
 
 const regisAdmin = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
@@ -133,57 +132,48 @@ const getMessageById = asyncHandler(async (req, res) => {
   const { id } = req.admin;
   const { message_id } = req.params;
   const findAdmin = await Admin.findById({ _id: id });
-  if (!findAdmin) {
-    res.status(401).json({ message: "Success!" });
+  if (findAdmin) {
+    const findMessage = await Message.findById({ _id: message_id })
+    if(findMessage){
+      res.status(200).json({ message: 'Success!', data: findMessage.message })
+    }else{
+      res.status(404).json({ message: "Failed message id" })
+    }
+  } else {
+    res.status(401).json({ message: "Admin is not defined!" });
   }
-
-  const findMessage = await Message.findOne({});
-  const message = findMessage.messages.find((c) => c._id == message_id);
-  if (!message) {
-    res.status(404).json({ message: "Message is not defined!" });
-  }
-
-  message.isRead = true;
-  await findMessage.save();
-
-  res.status(200).json({ message: "Success!", data: message });
 });
 
 const findFromCode = asyncHandler(async (req, res) => {
   const { id } = req.admin;
   const { code } = req.body;
-  const findAdmin = await Admin.findById({ _id: id });
-  if (findAdmin) {
-    const findCode = await Message.findOne({});
-    const userProd = findCode.message.find((obj) => obj.code == code);
-    if (userProd) {
-      // res.status(200).json({ message: 'Success!', data:  })
-      console.log(userProd);
-    }
+  const findCode = await Message.findOne({ code: code });
+  if (findCode) {
+    res.status(200).json({ message: "Success!", data: findCode });
+  } else {
+    res.status(404).json({ message: "Client is not defined!" });
   }
 });
 
-const deleteClient = asyncHandler(async(req, res)=>{
-    // const { id } = req.admin
-    const { chatId } = req.body
-    const findUser = await Client.findOne({ chatId: chatId })
-    if(findUser){ 
-      let deleteUser = await Client.findOneAndDelete({ chatId: chatId })
-      const deleteFromMessage = await Message.findOneAndDelete({ chatId: chatId })
-      await deleteUser.save()
-      res.status(200).json({ message: 'User success deleted!' })
-    }else{
-      res.status(404).json({ message: 'User is not defined' })
-    }
-})
+const deleteClient = asyncHandler(async (req, res) => {
+  const { chatId } = req.body;
+  const findUser = await Client.findOne({ chatId: chatId });
+  if (findUser) {
+    let deleteUser = await Client.findOneAndDelete({ chatId: chatId });
+    const deleteFromMessage = await Message.findOneAndDelete({
+      chatId: chatId,
+    });
+    res.status(200).json({ message: "User success deleted!" });
+  } else {
+    res.status(404).json({ message: "User is not defined" });
+  }
+});
 
-const deleteMessages = asyncHandler(async(req, res) => {
-  const { chatId } = req.body
-  const deleteChatId = await Message.findOneAndDelete({ chatId: chatId })
-  res.status(200).json({ message: 'Success!', data: deleteChatId })
-})
-
-
+const deleteMessages = asyncHandler(async (req, res) => {
+  const { chatId } = req.body;
+  const deleteChatId = await Message.findOneAndDelete({ chatId: chatId });
+  res.status(200).json({ message: "Success!", data: deleteChatId });
+});
 
 module.exports = {
   regisAdmin,
@@ -196,5 +186,5 @@ module.exports = {
   getAdmin,
   findFromCode,
   deleteClient,
-  deleteMessages
+  deleteMessages,
 };

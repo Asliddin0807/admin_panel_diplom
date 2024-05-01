@@ -12,10 +12,8 @@ const adminMiddleWare = async(req, res, next) => {
             if(admin.full_Access == true){
                 req.admin = admin
                 next()
-            }
-            
+            }  
         }
-        // res.status(401).json({ message: 'Unathorization!' })
     }catch(err){
         res.status(401).json({ message: err })
     }
