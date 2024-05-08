@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const clientSchema = new mongoose.Schema({
-    chatId: String,
+    chatId: Number,
     name: String,
     phone_number: String,
     cart: [
@@ -14,7 +14,10 @@ const clientSchema = new mongoose.Schema({
             category: String,
         }
     ],
-    total_price: Number
+    total_price: {
+        type: Number,
+        default: 0
+    }
 })
 
 module.exports = mongoose.model('Client', clientSchema)

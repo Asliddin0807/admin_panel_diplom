@@ -4,12 +4,15 @@ const Admin = require("../models/admins");
 const cloudinary = require("cloudinary").v2;
 require("dotenv").config();
 const multer = require("multer");
+const { generateCode } = require("../config/generateCode");
 
 const addProduct = asyncHandler(async (req, res) => {
   const { title, price, desc, category, numbers } = req.body;
   if (!req.file) {
     return res.status(400).json({ message: "Изображение не найдено" });
   }
+
+  console.log(title)
 
   cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
@@ -26,6 +29,7 @@ const addProduct = asyncHandler(async (req, res) => {
     desc: desc,
     category: category,
     numbers: numbers,
+    spece_code: generateCode()
   });
 
   await createProduct.save();
@@ -90,8 +94,8 @@ const updateProd = asyncHandler(async (req, res) => {
 
 const getProductByCateg = asyncHandler(async (req, res) => {
   const { category } = req.body;
+  console.log(category)
   const findProd = await Product.find({});
-  
   if (findProd) {
     let base = findProd.filter(item => item.category == category)
     res.status(200).json({ message: "Success!", data: base });

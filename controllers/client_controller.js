@@ -26,14 +26,15 @@ const regis = asyncHandler(async (req, res) => {
   }
 });
 
-const getUser = asyncHandler(async (req, res) => {
+const getUser = asyncHandler(async(req, res) => {
   const { chatId } = req.body;
   const findUser = await Client.findOne({ chatId: chatId });
-  if (!findUser) {
+  if (findUser) {
+    res.status(200).json({ message: "Success!", data: findUser });
+  }else{
     res.status(401).json({ message: "Пользователь не регистрирован!" });
   }
-
-  res.status(200).json({ message: "Success!", data: findUser });
+  
 });
 
 const addToCart = asyncHandler(async (req, res) => {
@@ -55,9 +56,9 @@ const addToCart = asyncHandler(async (req, res) => {
         });
         findClient.total_price = total;
         await findClient.save();
-        res.status(200).json({ message: "Успешно добавлено!" });
+        res.status(200).json({ message: "Успешно добавлено на корзинку чтобы оформить товары нажмите на кнопку 'Оформить'!" });
       } else {
-        res.status(200).json({ message: "Этот товар уже существует!" });
+        res.status(200).json({ message: "Этот товар уже существует на корзинке!" });
       }
     }
   }
@@ -65,6 +66,7 @@ const addToCart = asyncHandler(async (req, res) => {
 
 const deleteFromCart = asyncHandler(async (req, res) => {
   const { chatId, prodId } = req.body;
+  console.log(chatId)
   const findClient = await Client.findOne({ chatId: chatId });
   if (!findClient) {
     res.status(401).json({ message: "Пользователь не регистрирован!" });
@@ -95,16 +97,18 @@ const deleteFromCart = asyncHandler(async (req, res) => {
 
 const getMyCart = asyncHandler(async (req, res) => {
   const { chatId } = req.body;
+  console.log(chatId)
   const findUser = await Client.findOne({ chatId: chatId });
-  if (!findUser) {
+  if (findUser) {
+    res.status(200).json({
+      message: "Успешно!",
+      data: findUser.cart,
+      total_price: findUser.total_price,
+    });
+  }else{
     res.status(404).json({ message: "Пользователь не найден!" });
   }
 
-  res.status(200).json({
-    message: "Успешно!",
-    data: findUser.cart,
-    total_price: findUser.total_price,
-  });
 });
 
 const purchase = asyncHandler(async (req, res) => {
@@ -114,34 +118,6 @@ const purchase = asyncHandler(async (req, res) => {
   if (findUser) {
     const findCart = findUser.cart;
     if (findCart.length > 0) {
-      if (findInMessageUser) {
-        findCart.forEach((item) => {
-          findInMessageUser.total_price += item.price;
-          findInMessageUser.message.push({
-            product_name: item.title,
-            product_image: item.image,
-            product_price: item.price,
-            date: dateBase,
-            time: timeBase,
-            code: generateCode(),
-          });
-        });
-
-        await findInMessageUser.save();
-        let query = {
-          chatId: chatId,
-        };
-
-        let updateArray = {
-          $set: {
-            cart: [],
-            total_price: 0,
-          },
-        };
-
-        let updateBase = await Client.updateOne(query, updateArray);
-        res.status(200).json({ message: "Успешно отправлено!" });
-      } else {
         let month = [
           "Yanvar",
           "Fevral",
@@ -177,6 +153,7 @@ const purchase = asyncHandler(async (req, res) => {
             product_name: item.title,
             product_image: item.image,
             product_price: item.price,
+            product_desc: item.desc,
             date: dateBase,
             time: timeBase,
             code: generateCode(),
@@ -196,8 +173,28 @@ const purchase = asyncHandler(async (req, res) => {
         };
 
         let updateBase = await Client.updateOne(query, updateArray);
+        (async function sendNotification() {
+          // notification message
+          const message = {
+            to: 'ExponentPushToken[E5Z9KSHpE8M5nF0GtCqoj4]',
+            sound: "default",
+            title: 'New order🔔',
+            body: findUser.name,
+            
+          };
+      
+          await fetch("https://exp.host/--/api/v2/push/send", {
+            method: "POST",
+            headers: {
+              host: "exp.host",
+              accept: "application/json",
+              "accept-encoding": "gzip, deflate",
+              "content-type": "application/json",
+            },
+            body: JSON.stringify(message),
+          })
+        })()
         res.status(200).json({ message: "Успешно отправлено!" });
-      }
     } else {
       res.status(200).json({ message: "У вас нет товаров на корзинке!" });
     }
@@ -218,6 +215,17 @@ const getCategorys = asyncHandler(async (req, res) => {
   // res.status(200).json({ message: 'Success!', data: uniqueCategoriesArray })
 });
 
+
+const searchProduct = asyncHandler(async(req, res) => {
+  const { prodCode } = req.body
+  const findProd = await Product.findOne({ spece_code: prodCode })
+  if(findProd){
+    res.status(200).json({ message: 'Success!', data: findProd })
+  }else{
+    res.status(404).json({ message: 'Товар не найден!' })
+  }
+})
+
 module.exports = {
   regis,
   getUser,
@@ -226,4 +234,5 @@ module.exports = {
   getMyCart,
   purchase,
   getCategorys,
+  searchProduct
 };

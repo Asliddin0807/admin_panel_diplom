@@ -13,7 +13,7 @@ const multer = require('multer')
 
 const upload = multer({ dest: 'uploads/' });
 
-router.post("/add", upload.single('image'), adminMiddleWare, addProduct);
+router.post("/add", upload.single('image'), addProduct);
 router.get("/get_product", getProducts);
 router.delete("/deleteProduct", adminMiddleWare, deleteProduct);
 router.put("/update/:prod_id", adminMiddleWare, updateProd);

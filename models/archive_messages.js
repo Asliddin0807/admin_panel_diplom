@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
-const messageSchema = new mongoose.Schema({
+const archive = new mongoose.Schema({
+  spaceId: String,
   chatId: String,
   user_name: String,
   phone_number: String,
@@ -9,7 +10,7 @@ const messageSchema = new mongoose.Schema({
   code: String,
   status: {
     type: String,
-    default: "Order",
+    default: "Pending",
   },
   message: [
     {
@@ -21,13 +22,19 @@ const messageSchema = new mongoose.Schema({
       product_count: Number,
       code: String,
       product_desc: String,
+      isDelevering: {
+        type: Boolean,
+        default: false
+      }
     },
+    
   ],
   total_price: Number,
   isRead: {
     type: Boolean,
-    default: false,
+    default: true,
   },
 });
 
-module.exports = mongoose.model("Message", messageSchema);
+
+module.exports = mongoose.model('Archive', archive)

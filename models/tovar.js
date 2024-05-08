@@ -8,7 +8,8 @@ const tovarSchema = new mongoose.Schema({
     numbers: Number ,
     desc: String ,
     category: String,
-    rating: Number
+    rating: Number,
+    spece_code: Number
 })
 
 module.exports = mongoose.model('Product', tovarSchema)
