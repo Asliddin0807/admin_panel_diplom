@@ -3,7 +3,7 @@ const token = "7144167777:AAG5hpfbyhF5LL9qFDf3JPt1t2PfIs74H7Y";
 const bot = new TelegramBot(token, { polling: true });
 const { default: axios } = require("axios");
 
-let baseUrl = "https://admin-panel-diplom.onrender.com";
+let baseUrl = "https://telegram-shop.onrender.com";
 
 let createdBot = () => {
   bot.onText(/\/echo (.+)/, (msg, match) => {
