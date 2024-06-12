@@ -3,7 +3,7 @@ const token = "7144167777:AAG5hpfbyhF5LL9qFDf3JPt1t2PfIs74H7Y";
 const bot = new TelegramBot(token, { polling: true });
 const { default: axios } = require("axios");
 
-let baseUrl = "https://admin-panel-diplom.onrender.com";
+let baseUrl = "http://localhost:8000";
 
 let createdBot = () => {
   bot.onText(/\/echo (.+)/, (msg, match) => {
@@ -27,6 +27,7 @@ let createdBot = () => {
               [{ text: "Товары" }, { text: "Категория" }],
               [{ text: "Мои товары" }, { text: "Оформить" }],
               [{ text: "Моя информация" }, { text: "Поиск" }],
+              [{ text: "Техническая поддержка" }, { text: "Автор" }],
             ],
           }),
         };
@@ -69,6 +70,7 @@ let createdBot = () => {
               [{ text: "Товары" }, { text: "Категория" }],
               [{ text: "Мои товары" }, { text: "Оформить" }],
               [{ text: "Моя информация" }, { text: "Поиск" }],
+              [{ text: "Техническая поддержка" }, { text: "Автор" }],
             ],
           }),
         };
@@ -268,42 +270,29 @@ let createdBot = () => {
     }
   });
 
-  // bot.on("message", (msg) => {
-  //   let chatId = msg.chat.id;
-  //   let parseNumber = parseInt(msg.text);
-  //   if (typeof parseNumber == "number") {
-  //     let apiHandler = async () => {
-  //       try {
-  //         let { data } = await axios.post(`${baseUrl}/search`, {
-  //           prodCode: parseNumber,
-  //         });
-  //         console.log(true, data);
-  //         let obj = data.data
-  //         bot.sendPhoto(chatId, `${obj.image}`, {
-  //           caption: `📝 *Титул:* ${obj.title} \n 💰 *Цена:* ${obj.price} \n\n 📃 *Комментария:* ${obj.desc}`,
-  //           parse_mode: "Markdown",
-  //           reply_markup: {
-  //             inline_keyboard: [
-  //               [
-  //                 {
-  //                   text: "Добавить в корзину",
-  //                   callback_data: `add_to_cart_${obj._id}`,
-  //                 },
-  //               ],
-  //             ],
-  //           },
-  //         });
-  //       } catch (err) {
-  //         bot.sendMessage(chatId, err.response.data)
-  //       }
-  //     };
+  bot.on("message", (msg) => {
+    if (msg.text == "Техническая поддержка") {
+      let text =
+        "Если появился ошибка или какое-то проблема то свяжитесь с нами, всё будет как раньше!";
+      bot.sendMessage(msg.chat.id, `@Asror_UC ${text}`);
+    }
+  });
 
-  //     apiHandler();
-  //   }
-  // });
+  bot.on("message", (msg) => {
+    if (msg.text == "Автор") {
+      bot.sendPhoto(
+        msg.chat.id,
+        "https://h5p.org/sites/default/files/h5p/content/1209180/images/file-6113d5f8845dc.jpeg",
+        {
+          caption: `Одилов Асрор - разработчик и профессональный SMMщик, умеет разрабатывать различные типы API из Backend и спакойно реламировать.  \n`,
+          parse_mode: "Markdown",
+        }
+      );
+    }
+  });
 };
 
-let notificationUser = async (id, code) => { 
+let notificationUser = async (id, code) => {
   bot.sendMessage(id, "Ваш заказ приехал!");
   setTimeout(() => {
     bot.sendMessage(id, "Ваш код " + code);
