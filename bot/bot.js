@@ -53,6 +53,11 @@ let createdBot = () => {
     console.log(err);
   });
 
+  bot.on('polling_error', (error) => {
+    console.error(error.code);  // => 'ETELEGRAM'
+    console.error(error.response.body);
+  });
+
   bot.on("contact", (msg) => {
     let chatId = msg.chat.id;
     let apiFunctins = async () => {
