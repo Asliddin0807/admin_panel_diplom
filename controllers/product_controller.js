@@ -46,6 +46,7 @@ const getProducts = asyncHandler(async (req, res) => {
 const deleteProduct = asyncHandler(async (req, res) => {
   const { prod_id } = req.body;
   const { id } = req.admin;
+  console.log(true, prod_id)
   const findAdmin = await Admin.findById({ _id: id });
   if (!findAdmin) {
     res.status(404).json({ message: "Failure" });
