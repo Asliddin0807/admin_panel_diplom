@@ -1,21 +1,7 @@
-let mas = [
-    {
-        status: 'Pending',
-        message: [
-            {
-                id: 10,
-                status: 'Pending'
+let app = '9,000';
+// Удаляем запятые из строки
+let numberString = app.replace(/,/g, '');
+// Преобразуем строку в число
+let number = parseFloat(numberString);
 
-            }
-        ]
-    },
-    {
-        status: 'Pending',
-        message: [
-            {
-                id: 11,
-                status: 'Pending'
-            }
-        ]
-    }
-]
+console.log(number); // Выведет 9000000

@@ -12,7 +12,8 @@ const addProduct = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Изображение не найдено" });
   }
 
-  console.log(title)
+  let resultesss = price.replace(/,/g, '');
+  let tap = parseFloat(resultesss);
 
   cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
@@ -24,7 +25,7 @@ const addProduct = asyncHandler(async (req, res) => {
 
   const createProduct = new Product({
     title: title,
-    price: price,
+    price: tap,
     image: result.secure_url,
     desc: desc,
     category: category,

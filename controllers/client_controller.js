@@ -152,7 +152,7 @@ const purchase = asyncHandler(async (req, res) => {
           createMessage.message.push({
             product_name: item.title,
             product_image: item.image,
-            product_price: item.price,
+            product_price: Number(item.price),
             product_desc: item.desc,
             date: dateBase,
             time: timeBase,
