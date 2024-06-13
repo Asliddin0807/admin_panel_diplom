@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const tovarSchema = new mongoose.Schema({
     image: String,
-    price: Number,
+    price: String,
     title: String,
     viewers: Number ,
     numbers: Number ,
